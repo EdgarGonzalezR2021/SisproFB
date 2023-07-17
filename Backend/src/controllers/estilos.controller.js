@@ -36,7 +36,8 @@ export const createNewEstilo = async (req, res) => {
     state,
   } = req.body;
 
-  // console.log('en createNewEstilo req.body > ', req.body);
+  console.log('en createNewEstilo req.body > ', req.body.estilo);
+  console.log('en createNewEstilo req.body > ', req.body.fotografia);
   
   // validating
   /*

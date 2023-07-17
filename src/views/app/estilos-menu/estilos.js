@@ -114,7 +114,7 @@ function Estilos({ match }) {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar!',      
+      confirmButtonText: 'Sí, eliminar!',
     }).then((result) => {
       if (result.isConfirmed) {
         /* con arreglos si elimina
@@ -401,7 +401,7 @@ function Estilos({ match }) {
             className="btn btn-warning btn-xs uppercase"
             onClick={() => setModalInsertar(false)}
           >
-               Regresar
+            Regresar
           </button>
         </ModalHeader>
         <ModalBody>

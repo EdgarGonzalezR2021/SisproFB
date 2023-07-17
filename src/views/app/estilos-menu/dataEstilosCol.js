@@ -72,7 +72,7 @@ export const CallBackImagen = (cell) => {
   });
   */
 
-  console.log('en CallBackImagen', cell.image);
+  console.log('en DATAESTILOS CallBackImagen', cell.image);
   const image = require(''.concat('./img/', cell.image)).default;
   return <img src={image} alt="FotoEstilo" width="50px" height="50px" />;
 };
