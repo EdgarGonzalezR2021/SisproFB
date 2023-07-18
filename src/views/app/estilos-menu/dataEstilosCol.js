@@ -1,82 +1,24 @@
 import { textFilter } from 'react-bootstrap-table2-filter';
-// import React from 'react';
-// import { existsSync } from 'fs';
-// import { fs, access } from 'electron';
-// import * as fs from 'fs-extra';
-// import fs from 'fs';
+import React from 'react';
 
-/* eslint-disable */
-export const CallBackImagen = (cell) => {
-  console.log(cell.image);
-  // const image = require(''.concat('./',cell.image)).default;
-  if (cell.image === '' || cell.image === undefined || cell.image === null) {
-    //return <img src={require('./img/sinfoto.jpg').default} alt="FotoEstilo" width="50px" height="50px" />;
-    return '';
-  }
+/* METODO 3 */
+export function CallBackImagen(cell) {
+  // eslint-disable-next-line
+  const image = ''.concat('/static/images/', cell.image) 
+  // console.log('CallBackImagen image ', image);
+  const http = new XMLHttpRequest();
+  http.open('HEAD', image, false);
+  http.send();
+  if (http.status !== 404) {
+    return <img src={image} alt="FotoEstilo" width="50px" height="50px" />;
+  };
+  // eslint-disable-next-line
+  return 'Imagen no existe en serv.: ' + image;
+}
 
-  // VERIFICA QUE LA FOTO EXISTA
-  // BIBLIOGRAFIA https://stackoverflow.com/questions/51816914/reading-from-filefile-system-without-node-js
-  function readSingleFile(f) {
-    // var f = evt.target.files[0];
-    if (f) {
-      var r = new FileReader();
-      r.onload = function (e) {
-        var contents = e.target.result;
-      };
-      try {
-        r.readAsText(f);
-      } catch (error) {
-        // console.log('error', error);
-        return '';
-      }
-    } else {
-      alert('Failed to load file');
-    }
-  }
-  const path = `./src/views/app/estilos-menu/img/${cell.image}`;
-  readSingleFile(path);
 
-  /*
-  // VERIFICA QUE LA FOTO EXISTA
-  const path = `./src/views/app/estilos-menu/img/${cell.image}`;
-  // const fs = require('fs-extra');
-  const fs = require('fs');
-  // With Promises:
-  fs.existsSync(path)
-    .then(() => {
-      console.log('success!');
-    })
-    .catch((err) => {
-      console.error(err);
-      return '';
-    });
-    */
-
-  /*
-  //const path = `./src/views/app/estilos-menu/img/${cell.image}`;
-  !fs.existsSync('./src/views/app/estilos-menu/img/SachaMotoShort3.jpg')
-    ? console.log('NO EXISTE')
-    : console.log('EXISTE');
-
-  /*
-    const fs = require('electron').remote.require('fs')
-    // const path = `./src/views/app/estilos-menu/img/${cell.image}`;
-    fs.access("somefile", error => {
-      if (!error) {
-          // file exists
-          console.log('EXISTE');
-      } else {
-          // file does not exist
-          console.log('NO EXISTE');
-      }
-  });
-  */
-
-  console.log('en DATAESTILOS CallBackImagen', cell.image);
-  const image = require(''.concat('./img/', cell.image)).default;
-  return <img src={image} alt="FotoEstilo" width="50px" height="50px" />;
-};
 /* eslint-enable */
+
 
 // Estilos Definition
 const dataEstilosCol = [
@@ -160,26 +102,12 @@ const dataEstilosCol = [
   },
 
   // FOTOGRAFIA
-  /*
-  {
-    dataField: "file",
-    text: "File",
-    formatter: (cell, row) => (
-      <img alt={row.file} style={{ maxWidth: "100%" }} src={row.file} />
-    )
-  },
-  */
   {
     dataField: 'fotografia',
     text: 'Fotografia',
     sort: false,
     // eslint-disable-next-line
     formatter: (cell) => <CallBackImagen image={cell} />,
-    // formatter: (cellContent, row) => {
-    //    return (
-    //        <img src="foto1.jpg" alt="FotoEstilo"/>
-    //    )
-    // },
   },
 
   // OBSERVACIONES

@@ -564,7 +564,7 @@ function FormikContainer() {
                   /* onChange={leerFotografia} */
                 />
                 <div>{nombreFotografia}</div>
-                {fotografia && (
+                {fotografia.name && (
                   <img src={URL.createObjectURL(fotografia)} alt="Fotografía" />
                 )}
                 {/*

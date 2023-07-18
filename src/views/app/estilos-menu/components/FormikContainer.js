@@ -30,7 +30,15 @@ const FormikContainer = () => {
       formData.append('estilo', values.estilo);
       formData.append('fotografia', values.fotografia);
       console.log('onsubmit', values);
-      await axios.post('http://localhost:4000/api/estilos', values);
+      await axios.post('http://localhost:4000/api/estilos', values)
+      /*, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+      );
+      */
+      //    console.log('FormikContainer, onSubmit response.data ',response.data);
       resetForm();
       Swal.fire(
         '¡Estilo creado!',
@@ -49,7 +57,7 @@ const FormikContainer = () => {
       onSubmit={onSubmit}
     >
       {({ errors, touched, setFieldValue }) => (
-        <Form className="bg-white shadow-md px-8 pt-0 pb-6 mb-4">
+        <Form className="bg-white shadow-md px-8 pt-0 pb-6 mb-4" action="/stats" encType="multipart/form-data" method="post">
           <link
             href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
             rel="stylesheet"

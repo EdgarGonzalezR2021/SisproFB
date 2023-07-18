@@ -7,8 +7,8 @@ import morgan from 'morgan';
 import config from './config';
 
 const app = express();
-const multer = require('multer');
-const upload = multer();
+// const multer = require('multer');
+// const upload = multer();
 
 // settings
 app.set('port', config.port);
@@ -22,6 +22,8 @@ app.use(express.json());
 // Routes
 app.use('/api', productRoutes);
 app.use('/api', estiloRoutes);
+
+/*
 app.post('/upload-image', upload.single('fotografia'), async (req, res) => {
   console.log('en app.post(/upload-image');
   try {
