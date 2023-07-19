@@ -4,10 +4,8 @@
 // BIBLIOGRAFIA EXCEL https://react-bootstrap-table.github.io/react-bootstrap-table2/storybook/index.html?selectedKind=Export%20CSV&selectedStory=Basic%20Export%20CSV&full=0&addons=1&stories=1&panelRight=0&addonPanel=storybook%2Factions%2Factions-panel
 // BIBLIOGRAFIA https://www.thecodehubs.com/crud-operation-using-axios-in-react/
 
-// eslint-disable-next-line
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
-
-// eslint-disable-next-line
 import axios from 'axios';
 
 import {
@@ -27,33 +25,21 @@ import ToolkitProvider, { CSVExport } from 'react-bootstrap-table2-toolkit';
 
 import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import cellEditFactory from 'react-bootstrap-table2-editor';
+// import cellEditFactory from 'react-bootstrap-table2-editor';
 import Swal from 'sweetalert2';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-contexify/dist/ReactContexify.min.css';
 import './estilos.css';
-// import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 // de formik
 // import { theme, ThemeProvider } from '@chakra-ui/core';
-import FormikContainer from './components/FormikContainer';
-
-// import dataEstilos from './dataEstilos';
-import dataEstilosCol from './dataEstilosCol';
-// import { async } from 'rxjs';
+import {
+  FormikContainer,
+  FormikContainerEditar,
+} from './components/FormikContainer';
+import dataEstilosColBase from './dataEstilosCol';
 
 const { ExportCSVButton } = CSVExport;
-// const key = dataEstilos.map((el) => el.id);
-let ejecutarSoloUnaVez = false;
-
-function jobStatusValidator(value) {
-  const nan = Number.isNaN(parseInt(value, 10));
-  if (nan) {
-    return 'Job Status must be a integer!';
-  }
-  return true;
-}
-
 const defaultSorted = [
   {
     dataField: 'estilo',
@@ -61,17 +47,18 @@ const defaultSorted = [
   },
 ];
 
+// FUNCION ESTILOS PRINCIPAL
 function Estilos({ match }) {
-  const [dataTable, setdataTable] = useState([]); // dataEstilos
-  const [modalEditar, setModalEditar] = useState(false);
-  // const [modalEliminar, setModalEliminar] = useState(false);
-  const [modalInsertar, setModalInsertar] = useState(false);
+  const [dataEstilos, setdataEstilos] = useState([]);
+  const [modalEditar, setmodalEditar] = useState(false);
+  const [modalInsertar, setmodalInsertar] = useState(false);
   // To delete rows you be able to select rows
   const [state, setState] = useState({
     row: null,
     state: null,
     oldValue: null,
   });
+
   const [estiloSeleccionado, setestiloSeleccionado] = useState({
     id: 0,
     estilo: '',
@@ -86,65 +73,62 @@ function Estilos({ match }) {
     actions: '',
   });
 
-  // hace la conexion con el backend para consultar estilos
-  useEffect(() => {
-    axios
-      .get('http://localhost:4000/api/estilos')
-      .then((response) => {
-        console.log('exito', response.data);
-        setdataTable(response.data);
-      })
-      .catch((error) => {
-        console.log('error', error);
-      });
-  }, []);
+  const handleCloseModalInsertar = () => setmodalInsertar(false); // setShowModal(false)
+  const handleCloseModalEditar = () => setmodalEditar(false);
+  const handleEstiloSeleccionado = (estilo) => {
+    setEstiloSeleccionado(estilo);
+  };
+  // const handleShowModal = () => setShowModal(true);
 
-  // ELIMINA ESTILO
-  const eliminar = (estiloSel) => {
-    console.log(estiloSel.id);
+  // eslint-disable-next-line
+  const getEstilos = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/estilos');
+      // console.log('getEstilos response.data:', response.data);
+      setdataEstilos(response.data);
+    } catch (error) {
+      console.log('error en getEstilos ', error);
+    }
+  };
+
+  // eslint-disable-next-line
+  const handleAfterDeleteRow = (rowId) => {
+    // const newData = dataEstilos.filter((row) => row.id !== rowId);
+    console.log('handleAfterDeleteRow');
+    setdataEstilos(getEstilos());
+  };
+
+  const eliminarEstilo = (estiloSel) => {
+    // console.log('en eliminarestilo dataEstilos=', dataEstilos);
     Swal.fire({
-      title: ''.concat(
-        'Eliminar estilo ',
-        estiloSel.estilo,
-        '.\n',
-        'Está usted seguro?'
-      ),
-      text: 'No podrá revertir el proceso!',
+      title: '¿Estás seguro de eliminar este estilo?',
+      text: 'Una vez eliminado, no se podrá recuperar.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar!',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
-      if (result.isConfirmed) {
-        /* con arreglos si elimina
-        setdataTable(
-          dataTable.filter((elemento) => {
-            return elemento.id !== estiloSel.id;
-          })
-        );
-        // setModalEliminar(false);
-        */
-
+      if (result.value) {
         // ELIMINA ESTILO DE LA BD CON AXIOS
         axios
-          // eslint-disable-next-line
           .delete('http://localhost:4000/api/estilos/' + estiloSel.id)
-          .then((response) => {
-            console.log('exito al borrar', response.data);
+          .then((res) => {
             Swal.fire(
               'Eliminado!',
-              ''.concat('El estilo ', estiloSel.estilo, ' ha sido eliminado.'),
+              'El estilo ha sido eliminado con éxito.',
               'success'
             );
-            setdataTable(
-              dataTable.filter((elemento) => {
-                return elemento.id !== estiloSel.id;
-              })
-            );
+            setdataEstilos(getEstilos());
           })
-          .catch((error) => {
-            console.log('error', error);
+          .catch((err) => {
+            Swal.fire(
+              'Error!',
+              // eslint-disable-next-line
+              'Ocurrió un error al eliminar el estilo <br><br>' + err,
+              'error'
+            );
           });
       }
     });
@@ -153,9 +137,10 @@ function Estilos({ match }) {
   // SELECCIONA ESTILO PARA EDITAR O ELIMINAR
   const seleccionarEstilo = (elemento, caso) => {
     setestiloSeleccionado(elemento);
-    return caso === 'Editar' ? setModalEditar(true) : eliminar(elemento);
+    return caso === 'Editar' ? setmodalEditar(true) : eliminarEstilo(elemento);
   };
 
+  /*
   const handleChange = (e) => {
     const { name, value } = e.target;
     setestiloSeleccionado((prevState) => ({
@@ -164,35 +149,24 @@ function Estilos({ match }) {
     }));
   };
 
-  /* eslint-disable */
   const editar = () => {
-    const dataNueva = dataTable;
+    const dataNueva = dataEstilos;
     dataNueva.map((elemento) => {
       if (elemento.id === estiloSeleccionado.id) {
         elemento.estilo = estiloSeleccionado.estilo;
         elemento.nombreestilo = estiloSeleccionado.nombreestilo;
       }
     });
-    setdataTable(dataNueva);
-    setModalEditar(false);
+    setdataEstilos(dataNueva);
+    setmodalEditar(false);
   };
-  /* eslint-enable */
+  */
 
   // ABRE MODAL INSERTAR
+  /*
   const abrirModalInsertar = () => {
     setestiloSeleccionado(null);
-    setModalInsertar(true);
-  };
-
-  /*
-  const insertar = () => {
-    const valorInsertar = estiloSeleccionado;
-    valorInsertar.id = dataTable[dataTable.length - 1].id + 1;
-    const dataNueva = dataTable;
-    dataNueva.push(valorInsertar);
-    // console.log(dataNueva);
-    setdataTable(dataNueva);
-    setModalInsertar(false);
+    setmodalInsertar(true);
   };
   */
 
@@ -202,48 +176,41 @@ function Estilos({ match }) {
     hideSelectColumn: true,
   };
 
-  // Agrega botones editar, eleiminar a dataEstilosCol
-  if (ejecutarSoloUnaVez === false) {
-    ejecutarSoloUnaVez = true;
+  // Prepara Columnas para acciones de editar/eliminar en la Tabla
+  const dataEstilosCol = [...dataEstilosColBase];
+  dataEstilosCol.push({
+    text: '',
+    dataField: 'actions',
+    editable: false,
+    isDummyField: true,
+    formatExtraData: state,
+    formatter: (cellContent, row) => {
+      return (
+        <div className="btn-group">
+          <button
+            type="button"
+            className="flex btn btn-primary btn-xs"
+            onClick={() => seleccionarEstilo(row, 'Editar')}
+          >
+            Editar
+          </button>
+          <button
+            type="button"
+            className="flex btn btn-danger btn-xs"
+            onClick={() => seleccionarEstilo(row, 'Eliminar')}
+          >
+            Eliminar
+          </button>
+        </div>
+      );
+    },
+  });
 
-    dataEstilosCol.push({
-      text: '',
-      dataField: 'actions',
-      editable: false,
-      isDummyField: true,
-      formatExtraData: state,
-      formatter: (cellContent, row) => {
-        return (
-          <div className="btn-group">
-            <button
-              type="button"
-              className="flex btn btn-primary btn-xs"
-              onClick={() => seleccionarEstilo(row, 'Editar')}
-            >
-              Editar
-            </button>
-            <button
-              type="button"
-              className="flex btn btn-danger btn-xs"
-              onClick={() => seleccionarEstilo(row, 'Eliminar')}
-            >
-              Eliminar
-            </button>
-          </div>
-        );
-      },
-    });
-  }
+  // Actualiza la pantalla en cada accion
+  useEffect(() => {
+    getEstilos();
+  }, []);
 
-  /*
-  // a function to save the old value
-  const handleStartEdit = (row) => {
-    setState((prev) => {
-      let newVal = { ...prev, oldValue: { ...row } };
-      return newVal;
-    });
-  };
-  */
   /* eslint-disable */
   return (
     <>
@@ -253,7 +220,7 @@ function Estilos({ match }) {
           <Separator className="mb-2" />
         </Colxx>
       </Row>
-      {/*
+      {/* PARA OTROS IDIOMAS
       <Row>
         <Colxx xxs="12" className="mb-4">
           <p>
@@ -267,7 +234,7 @@ function Estilos({ match }) {
       <div-horizontal>
         <ToolkitProvider
           keyField="id"
-          data={dataTable}
+          data={Array.isArray(dataEstilos) ? dataEstilos : []}
           columns={dataEstilosCol}
           exportCSV={{ onlyExportFiltered: true, exportAll: false }}
         >
@@ -276,7 +243,11 @@ function Estilos({ match }) {
               {/* AGREGAR */}
               <Button
                 className="btn btn-success uppercase"
-                onClick={() => abrirModalInsertar()}
+                onClick={() => {
+                  setestiloSeleccionado(null);
+                  setmodalInsertar(true);
+                  getEstilos;
+                }}
               >
                 AGREGAR
               </Button>
@@ -292,12 +263,13 @@ function Estilos({ match }) {
               <BootstrapTable
                 {...props.baseProps}
                 id="table-employee-compensation"
-                data={dataTable}
+                data={dataEstilos}
                 columns={dataEstilosCol}
                 // para eliminar row sel
                 selectRow={selectRowProp}
                 // classes="customBootStrapClasses"
                 // classes="react-bootstrap-table-next"
+                onAfterDeleteRow={handleAfterDeleteRow}
                 bordered={true}
                 bootstrap4
                 hover
@@ -310,7 +282,7 @@ function Estilos({ match }) {
                 defaultSorted={defaultSorted}
                 filter={filterFactory()}
                 condensed
-                editable={{ validator: jobStatusValidator }}
+                // editable={{ validator: jobStatusValidator }}
                 pagination={paginationFactory({
                   page: 1,
                   sizePerPage: 7,
@@ -322,6 +294,7 @@ function Estilos({ match }) {
                   showTotal: true,
                   alwaysShowAllBtns: true,
                 })}
+                /*
                 cellEdit={cellEditFactory({
                   mode: 'dbclick',
                   blurToSave: true,
@@ -344,129 +317,68 @@ function Estilos({ match }) {
                   },
                   nonEditableRows: () =>
                     state.row ? key.filter((el) => el !== state.row.id) : [],
-                })}
+                })} */
               />
             </div>
           )}
         </ToolkitProvider>
       </div-horizontal>
 
-      <Modal isOpen={modalEditar}>
-        <ModalHeader>
-          <div>
-            <h3>Editar País</h3>
-          </div>
-        </ModalHeader>
-        <ModalBody>
-          <div className="form-group">
-            <label>ID</label>
-            <input
-              className="form-control"
-              readOnly
-              type="text"
-              name="id"
-              value={estiloSeleccionado && estiloSeleccionado.id}
-            />
-            <br />
-            <label>Estilo</label>
-            <input
-              className="form-control"
-              type="text"
-              name="estilo"
-              value={estiloSeleccionado && estiloSeleccionado.id}
-              onChange={handleChange}
-            />
-            <br />
-            <br />
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <button className="btn btn-primary" onClick={() => editar()}>
-            Actualizar
-          </button>
-          <button
-            className="btn btn-danger"
-            onClick={() => setModalEditar(false)}
-          >
-            Cancelar
-          </button>
-        </ModalFooter>
-      </Modal>
+      <Modal isOpen={modalEditar}></Modal>
 
-      <Modal isOpen={modalInsertar} className="modal-content">
+      {/* INICIA MODAL PARA INSERTAR */}
+      <Modal
+        isOpen={modalInsertar}
+        onClose={handleCloseModalInsertar}
+        className="modal-content"
+      >
         <ModalHeader>
-          <label className="">VENTANA PARA AGREGAR ESTILO</label>
+          <label className="btn-block bold">AGREGAR ESTILO</label>
           <button
             type="button"
             className="btn btn-warning btn-xs uppercase"
-            onClick={() => setModalInsertar(false)}
+            onClick={() => {
+              setdataEstilos(getEstilos);
+              setmodalInsertar(false);
+            }}
           >
             Regresar
           </button>
         </ModalHeader>
         <ModalBody>
           <div className="form-group">
-            {/* <ThemeProvider theme={theme}> */}
-            {/* <div className="App"> */}
             <FormikContainer />
-
-            {/* </div> */}
-            {/* </ThemeProvider> */}
-
-            {/* <label>ID</label> 
-            <input
-              className="form-control"
-              readOnly
-              type="text"
-              value={dataTable[dataTable.length - 1].id + 1}
-              name="id"
-            />
-            */}
-            {/*
-            <br />
-            <label>Estilo</label>
-            <input
-              className="form-control"
-              type="text"
-              name="estilo"
-              value={estiloSeleccionado ? estiloSeleccionado.name : ''}
-              onChange={handleChange}
-            />
-            <br />
-
-            <label>Nombre</label>
-            <input
-              className="form-control"
-              type="text"
-              name="nombreestilo"
-              value={estiloSeleccionado ? estiloSeleccionado.vehicle : ''}
-              onChange={handleChange}
-            />
-        <br />
-        */}
           </div>
         </ModalBody>
-        {/*
-        <ModalFooter>
-          
+      </Modal>
+      {/* FIN DE MODAL PARA INSERTAR */}
+
+      {/* INICIA MODAL PARA EDITAR */}
+      <Modal
+        isOpen={modalEditar}
+        onClose={handleCloseModalEditar}
+        className="modal-content"
+      >
+        <ModalHeader>
+          <label className="btn-block bold">EDITAR ESTILO</label>
           <button
             type="button"
-            className="btn btn-primary"
-            onClick={() => insertar()}
-          >
-            Insertar
-          </button>
-      
-          <button
-            type="button"
-            className="btn btn-danger"
-            onClick={() => setModalInsertar(false)}
+            className="btn btn-warning btn-xs uppercase"
+            onClick={() => {
+              setdataEstilos(getEstilos);
+              setmodalEditar(false);
+            }}
           >
             Regresar
           </button>
-        </ModalFooter>
-        */}
+        </ModalHeader>
+        <ModalBody>
+          <div className="form-group">
+            <FormikContainerEditar estiloSeleccionado={estiloSeleccionado} />
+          </div>
+        </ModalBody>
       </Modal>
+      {/* FIN DE MODAL PARA EDITAR */}
     </>
   );
 }
@@ -475,5 +387,5 @@ function Estilos({ match }) {
 
 export default Estilos;
 
-/* eslint-disable */
+/* eslint-enable */
 // eslint-disable-next-line

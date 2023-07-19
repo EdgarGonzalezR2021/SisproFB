@@ -3,7 +3,7 @@ import { getConnection, querys, sql } from '../database';
 /* Oficial */
 export const getEstilos = async (req, res) => {
   try {
-    console.log('getEstilos');
+    // console.log('getEstilos');
     const pool = await getConnection();
     const result = await pool.request().query(querys.getAllEstilos);
     res.json(result.recordset);
@@ -19,7 +19,7 @@ export const getEstilos = async (req, res) => {
     // res.json(EstilosFiltered);
   } catch (error) {
     res.status(500);
-    res.send('en getEstilos', error.message);
+    res.send('getEstilos error.message', error.message);
   }
 };
 

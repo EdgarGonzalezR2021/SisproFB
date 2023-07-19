@@ -1,0 +1,17 @@
+[33mcommit afbf4ebed75b988424f200974be2f3a72b2c73d4[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Edgar Gonzalez R <edgargonzalezr@hotmail.com>
+Date:   Mon Jul 17 20:33:06 2023 -0600
+
+    Estilos: validando imagenes al listar estlos, solo falta upload fotografia al servidor
+
+[33mcommit 21ed92f4b4131499cf0dfc8477a52dbe8ad31bb3[m
+Author: Edgar Gonzalez R <edgargonzalezr@hotmail.com>
+Date:   Mon Jul 17 08:25:11 2023 -0600
+
+    Estilos: funcionando con backend solo falta upload fotografia al servidor
+
+[33mcommit 77580c51b045c194111ccc630bea56cba8fb0007[m
+Author: Edgar Gonzalez R <edgargonzalezr@hotmail.com>
+Date:   Sat Jul 15 13:49:31 2023 -0600
+
+    Estilos: handleSubmit funcionando con backend 3

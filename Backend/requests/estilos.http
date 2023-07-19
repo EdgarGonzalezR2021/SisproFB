@@ -22,17 +22,23 @@ Content-Type: application/json
 {{api}}/3
 
 ### delete estilo 
-DELETE {{api}}/4
+DELETE {{api}}/123
 
 ### get count
 {{api}}/count
 
 ### update
-PUT {{api}}/5
+PUT {{api}}/137
 Content-Type: application/json
 
 {
-    "name": "laptop",
-    "description": "some laptop",
-    "quantity": 20
+    "estilo": "400a",
+    "nombreestilo": "some estilo4",
+    "linea": "linea 4",
+    "horma": "horma 4",
+    "molde": "molde 4",
+    "estado": "Activo",
+    "fotografia": "foto4.jpg",
+    "observaciones": "observaciones 4",
+    "status": "Activo"
 }
