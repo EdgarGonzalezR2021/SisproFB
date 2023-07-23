@@ -4,7 +4,7 @@ import React from 'react';
 /* METODO 3 */
 export function CallBackImagen(cell) {
   // eslint-disable-next-line
-  const image = ''.concat('/static/images/', cell.image) 
+  const image = ''.concat('./public/estilos/uploads/', cell.image) 
   // console.log('CallBackImagen image ', image);
   const http = new XMLHttpRequest();
   http.open('HEAD', image, false);

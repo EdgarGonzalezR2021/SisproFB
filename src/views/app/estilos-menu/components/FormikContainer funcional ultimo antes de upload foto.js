@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 
 const validationSchema = Yup.object().shape({
   estilo: Yup.string().required('El estilo es obligatorio'),
-  // fotografia: Yup.mixed().required('La fotografía es obligatoria'),
+  fotografia: Yup.mixed().required('La fotografía es obligatoria'),
 });
 
 // INICIA FormikContainer PARA AGREGAR ESTILOS
@@ -26,17 +26,25 @@ export const FormikContainer = () => {
     state: '',
   };
 
-  /* SI FUNCIONA PERO SIN IMAGENES 
+  /* si hay datos */
   const onSubmit = async (values, { resetForm }) => {
     try {
-      // no tiene datos
+      /* no tiene datos
       const formData = new FormData();
       formData.append('estilo', values.estilo);
       formData.append('fotografia', values.fotografia);
-      
+      */
       console.log('onsubmit', values);
       // si funciona el form con este axios para
       await axios.post('http://localhost:4000/api/estilos', values);
+      /*, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+      );
+      */
+      //    console.log('FormikContainer, onSubmit response.data ',response.data);
       resetForm();
       Swal.fire(
         '¡Estilo creado!',
@@ -45,123 +53,6 @@ export const FormikContainer = () => {
       );
     } catch (error) {
       Swal.fire('¡Error!', 'Ha ocurrido un error al crear el estilo', 'error');
-    }
-  };
-
-
-  /* FUNCIONAL CON DATOS PERO SIN FOTO 
-  const onSubmit = async (values, { resetForm }) => {
-    try {
-      // no tiene datos
-      // const formData = new FormData();
-      // formData.append('estilo', values.estilo);
-      // formData.append('fotografia', values.fotografia);
-      
-      console.log('onsubmit', values);
-      // si funciona el form con este axios para
-      await axios.post('http://localhost:4000/api/estilos', values);
-
-      //, {
-      //  headers: {
-      //    'Content-Type': 'multipart/form-data'
-      //  }
-      // }
-      // );
-      
-      //    console.log('FormikContainer, onSubmit response.data ',response.data);
-      resetForm();
-      Swal.fire(
-        '¡Estilo creado!',
-        'El estilo y fotografia se ha creado correctamente',
-        'success'
-      );
-    } catch (error) {
-      Swal.fire('¡Error!', 'Ha ocurrido un error al crear el estilo con fotografia', 'error');
-    }
-  };
-  */
-
-  // EN PROCESO CON FOTO
-  const onSubmit = async (values, { resetForm }) => {
-    const formData = new FormData();
-    formData.append('fotografia', values.fotografia); // 'file' es el archivo que deseas enviar
-    formData.append('estilo', values.estilo);
-
-    // SUBE LA FOTO DEL ESTILO PRIMERO Y SI NO HAR ERROR SUBE DATOS A SQL
-    axios
-      .post('http://localhost:4000/upload', formData)
-      .then((response) => {
-        // Manejar la respuesta del servidor si es necesario
-        console.log(
-          'EN formikcontainer onsubmit response.data del upload',
-          response.data
-        );
-      })
-      .catch((error) => {
-        // Manejar el error si la solicitud falla
-        console.error(error);
-        Swal.fire(
-          '¡Error!',
-          'Ha ocurrido un error al subir la fotografía<br><br>Error: ' +
-            error.message,
-          'error'
-        );
-      });
-
-    // SUBE EL ESTILO A SQL
-    try {
-      const formData = new FormData();
-      formData.append('estilo', values.estilo);
-      formData.append('nombreestilo', values.nombreestilo);
-      formData.append('linea', values.linea);
-      formData.append('horma', values.horma);
-      formData.append('molde', values.molde);
-      formData.append('estado', values.estado);
-      formData.append('fotografia', values.fotografia.name);
-      formData.append('observaciones', values.observaciones);
-      formData.append('state', values.state);
-
-      // Obtener el iterador de pares clave/valor
-      const entries = formData.entries();
-
-      // Recorrer el iterador y mostrar los valores
-      for (const pair of entries) {
-        console.log('entries',pair[0], pair[1]);
-      }
-
-      const valorFotografia = formData.get('fotografia');
-      console.log('onsubmit valorFotografia  ', valorFotografia);
-      console.log(
-        'en formikcontainer antes de post onsubmit TODO BIEN values',
-        values
-      );
-
-      axios
-        .post('http://localhost:4000/api/estilos', formData)
-        .then((response) => {
-          // Manejar la respuesta del servidor si es necesario
-          console.log(
-            'EN formikcontainer onsubmit response.data',
-            response.data
-          );
-          console.log(
-            'EN formikcontainer onsubmit response.file',
-            response.file
-          );
-        });
-      resetForm();
-      Swal.fire(
-        '¡Estilo creado!',
-        'El estilo y fotografia se ha creado correctamente',
-        'success'
-      );
-    } catch (error) {
-      Swal.fire(
-        '¡Error!',
-        'Ha ocurrido un error al crear el estilo </b><br><br> Error > ' +
-          error.message,
-        'error'
-      );
     }
   };
 
@@ -174,9 +65,9 @@ export const FormikContainer = () => {
       {({ errors, touched, setFieldValue }) => (
         <Form
           className="bg-white shadow-md px-8 pt-0 pb-6 mb-4"
-          action="/upload"
-          enctype="multipart/form-data"
-          method="POST"
+          action="/stats"
+          encType="multipart/form-data"
+          method="post"
         >
           <link
             href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
@@ -350,31 +241,10 @@ export const FormikContainer = () => {
               id="fotografia"
               name="fotografia"
               accept="image/*"
-              // className="form-control-file"
-              className="file-field input-field"
-              // value={formik.values.fotografia}
+              className="form-control-file"
               onChange={(event) => {
-                // setFieldValue('fotografia', event.currentTarget.files[0]);
-                setFieldValue(
-                  'fotografia',
-                  event.currentTarget.files[0],
-                  () => {
-                    console.log(
-                      '1en formikcontainer onChange fotografia=',
-                      fotografia
-                    );
-                  }
-                );
-                /*
-                console.log(
-                  'event.currentTarget.files[0]=',
-                  event.currentTarget.files[0]
-                );
-                console.log(
-                  '2en formikcontainer onChange fotografia=',
-                  fotografia
-                );
-                */
+                setFieldValue('fotografia', event.currentTarget.files[0].name);
+                console.log('fotografia=', event.currentTarget.files[0].name);
               }}
             />
             <ErrorMessage name="fotografia" />

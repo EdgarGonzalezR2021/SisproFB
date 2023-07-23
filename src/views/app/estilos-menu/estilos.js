@@ -67,7 +67,7 @@ function Estilos({ match }) {
     horma: '',
     molde: '',
     estado: '',
-    fotografia: '',
+    fotografia: null,
     observaciones: '',
     state: '',
     actions: '',
@@ -75,9 +75,9 @@ function Estilos({ match }) {
 
   const handleCloseModalInsertar = () => setmodalInsertar(false); // setShowModal(false)
   const handleCloseModalEditar = () => setmodalEditar(false);
-  const handleEstiloSeleccionado = (estilo) => {
-    setEstiloSeleccionado(estilo);
-  };
+  // const handleEstiloSeleccionado = (estilo) => {
+  //  setEstiloSeleccionado(estilo);
+  // };
   // const handleShowModal = () => setShowModal(true);
 
   // eslint-disable-next-line
@@ -98,6 +98,7 @@ function Estilos({ match }) {
     setdataEstilos(getEstilos());
   };
 
+  // ELIMINAR ESTILO
   const eliminarEstilo = (estiloSel) => {
     // console.log('en eliminarestilo dataEstilos=', dataEstilos);
     Swal.fire({

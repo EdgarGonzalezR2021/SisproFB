@@ -23,3 +23,4 @@ router.delete("/estilos/:id", deleteEstiloById);
 router.put("/estilos/:id", updateEstiloById);
 
 export default router;
+ 

@@ -1,19 +1,5 @@
 import { getConnection, querys, sql } from '../database';
 
-const multer = require('multer');
-// const upload = multer({ dest: './public/data/uploads/' });
-const express = require('express');
-const app = express();
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
 
 /* Oficial */
 export const getEstilos = async (req, res) => {
@@ -38,7 +24,10 @@ export const getEstilos = async (req, res) => {
   }
 };
 
+
 export const createNewEstilo = async (req, res) => {
+
+  console.log('createNewEstilo request.body', req.body)
   const {
     estilo,
     nombreestilo,
@@ -51,11 +40,10 @@ export const createNewEstilo = async (req, res) => {
     state,
   } = req.body;
 
-  // console.log('en createNewEstilo req.body fotografia > ', req.body.fotografia);
+  // console.log('en createNewEstilo req.body fotografia > ', fotografia);
 
   try {
     const pool = await getConnection();
-    // const fotografia = req.fotografia ? req.fotografia.filename : null;
 
     await pool
       .request()
@@ -65,11 +53,12 @@ export const createNewEstilo = async (req, res) => {
       .input('horma', sql.VarChar, horma)
       .input('molde', sql.VarChar, molde)
       .input('estado', sql.VarChar, estado)
-      .input('fotografia', sql.VarChar, fotografia)
+      .input('fotografia', sql.NVarChar, fotografia)
       .input('observaciones', sql.Text, observaciones)
       .input('state', sql.VarChar, state)
       .query(querys.addNewEstilo);
 
+      console.log('res.fotografia', res.fotografia);
     res.json({
       estilo,
       nombreestilo,
@@ -81,74 +70,10 @@ export const createNewEstilo = async (req, res) => {
       observaciones,
       state,
     });
-    console.log('en createNewEstilo antes de subir fotoGRAFIA', fotografia);
-
-    /*
-    try {
-
-    
-    app.post('/profile', upload.single('fotografia'), function(req, res, next) {
-      try {
-        const fotografia = req.file ? req.file.filename : null;
-        // Hacer algo con la fotografia cargada
-        res.send('Fotografía cargada exitosamente');
-      } catch (error) {
-        // Manejar cualquier error que se produzca durante la carga de archivos
-        next(error);
-      }
-    }, function(error, req, res, next) {
-      // Controlador de errores para manejar cualquier error que se produzca durante la carga de archivos
-      res.status(500).send({ message: 'Error al cargar la fotografía', error });
-    });
-
-    console.log('en createNewEstilo despues de subir fotoGRAFIA', fotografia);
-  }
-  catch (error) {
-    res.status(500);
-    res.send('en createNewEstilo', error.message);
-  }
-  */
-    // UPLOAD BASICO DE PRUEBAS
-    // try {
-
-    /*
-    app.post(
-      '/profile',
-      upload.single('fotografia'),
-      function (req, res, next) {
-        // req.file is the `avatar` file
-        // req.body will hold the text fields, if there were any
-      }
-    );
-    */
-
-    /*
-    } catch (error) {
-      console.log(error.message);
-    }
-    */
-
-    /*
-    console.log('antes de upload fotografia', fotografia);
-    app.post('/upload', upload.single('fotografia'), (req, res) => {
-      try {
-        console.log('1req.file.filename =', req.file.filename);
-        const fotografia = req.fotografia ? req.fotografia.filename : null;
-        return res
-          .status(200)
-          .send({ message: 'Photo uploaded successfully', fotografia });
-      } catch (error) {
-        console.log('ERROR req.fotografia.filename=', req.fotografia.filename);
-        console.log(error.message);
-        console.error(error);
-        return res.status(500).send({ message: 'Error uploading photo' });
-      }
-    });
-    console.log('en createNewEstilo despues de sbuir foto estilo');
-    */
+    // console.log('en createNewEstilo');
   } catch (error) {
     res.status(500);
-    res.send('en createNewEstilo', error.message);
+    res.send(error.message);
   }
 };
 

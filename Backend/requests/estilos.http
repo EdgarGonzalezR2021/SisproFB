@@ -4,7 +4,9 @@
 
 ### add a estilo
 POST http://localhost:4000/api/estilos
+
 Content-Type: application/json
+
 
 {
     "estilo": "400a",
@@ -32,7 +34,7 @@ PUT {{api}}/137
 Content-Type: application/json
 
 {
-    "estilo": "400a",
+    "estilo": "400a",se uede hacer 
     "nombreestilo": "some estilo4",
     "linea": "linea 4",
     "horma": "horma 4",
